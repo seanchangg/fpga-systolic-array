@@ -1,0 +1,16 @@
+db/
+incremental_db/
+output_files/
+sim/
+.altera_quartus/
+.cache/
+.DS_Store
+*.qws
+*.rpt
+*.summary
+*.smsg
+*.done
+*.jdi
+host/probe
+
+
