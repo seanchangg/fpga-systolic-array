@@ -11,29 +11,7 @@ VL_ATTR_COLD void Vjade_hw_top___024root___eval_static(Vjade_hw_top___024root* v
     // Body
     {
         // Inlined CFunc: _eval_static__TOP
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__scratch = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__leds = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__uptime = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__wrcount = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__btn_s = 3U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__addr = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__wdata = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__we = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__tx_data = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__tx_send = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__n = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__pending = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__sending = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__txn = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__out = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__tx_busy = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_tx__DOT__shift = 0x01ffU;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_tx__DOT__bitn = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_tx__DOT__count = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_rx__DOT__state = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_rx__DOT__count = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_rx__DOT__bitn = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__u_rx__DOT__sync = 3U;
+        vlSelfRef.jade_hw_top__DOT__u_top__DOT__count = 0U;
     }
     vlSelfRef.__Vtrigprevexpr___TOP__clk__0 = vlSelfRef.clk;
 }
@@ -42,20 +20,6 @@ VL_ATTR_COLD void Vjade_hw_top___024root___eval_initial(Vjade_hw_top___024root* 
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vjade_hw_top___024root___eval_initial\n"); );
     Vjade_hw_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
-    // Body
-    {
-        // Inlined CFunc: _eval_initial__TOP
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[0U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[1U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[2U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[3U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[4U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[5U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[6U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[7U] = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__rx_data = 0U;
-        vlSelfRef.jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__rx_valid = 0U;
-    }
 }
 
 VL_ATTR_COLD void Vjade_hw_top___024root___eval_final(Vjade_hw_top___024root* vlSelf) {
@@ -147,10 +111,11 @@ VL_ATTR_COLD bool Vjade_hw_top___024root___eval_phase__stl(Vjade_hw_top___024roo
                 {
                     // Inlined CFunc: _stl_sequent__TOP__0
                     vlSelfRef.led = (0x0000001fU & 
-                                     (~ ((0x00000010U 
-                                          & (vlSelfRef.jade_hw_top__DOT__u_top__DOT__uptime 
-                                             >> 0x00000014U)) 
-                                         | (IData)(vlSelfRef.jade_hw_top__DOT__u_top__DOT__leds))));
+                                     (~ ((0x0000001eU 
+                                          & (vlSelfRef.jade_hw_top__DOT__u_top__DOT__count 
+                                             >> 0x00000015U)) 
+                                         | (1U & (vlSelfRef.jade_hw_top__DOT__u_top__DOT__count 
+                                                  >> 0x00000019U)))));
                 }
             }
         }
@@ -182,15 +147,6 @@ VL_ATTR_COLD void Vjade_hw_top___024root___ctor_var_reset(Vjade_hw_top___024root
     vlSelf->pb = 0;
     vlSelf->dipsw = 0;
     vlSelf->led = 0;
-    vlSelf->jade_hw_top__DOT__u_top__DOT__addr = 0;
-    vlSelf->jade_hw_top__DOT__u_top__DOT__wdata = 0;
-    vlSelf->jade_hw_top__DOT__u_top__DOT__we = 0;
-    vlSelf->jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__rx_data = 0;
-    vlSelf->jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__rx_valid = 0;
-    vlSelf->jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__tx_busy = 0;
-    for (int __Vi0 = 0; __Vi0 < 8; ++__Vi0) {
-        vlSelf->jade_hw_top__DOT__u_top__DOT__u_bridge__DOT__b[__Vi0] = 0;
-    }
     for (int __Vi0 = 0; __Vi0 < 1; ++__Vi0) {
         vlSelf->__VstlTriggered[__Vi0] = 0;
     }

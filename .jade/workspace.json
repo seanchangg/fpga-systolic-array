@@ -2,47 +2,7 @@
   "ui": {
     "openTabs": [
       {
-        "path": "/Users/seanchang/projects/fpga/blink.v",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/tb_blink.v",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/blink.qpf",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/tb_uart.v",
-        "isDirty": false
-      },
-      {
         "path": "/Users/seanchang/projects/fpga/uart.v",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/uart_regs.v",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/uart_tx.v",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/blink.sdc",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/blink.qsf",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/uart.qsf",
-        "isDirty": false
-      },
-      {
-        "path": "/Users/seanchang/projects/fpga/uart.sdc",
         "isDirty": false
       }
     ],
@@ -59,9 +19,9 @@
       false,
       false,
       false,
-      false
+      true
     ],
     "boardWidth": 440.0,
-    "activeTabIndex": 10
+    "activeTabIndex": 0
   }
 }

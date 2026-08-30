@@ -7,13 +7,10 @@ module jade_hw_top (
     input  wire [4:0] dipsw,
     output wire [4:0] led
 );
-    wire uo_txd;
     wire [4:0] uo_led;
-    uart u_top (
+    blink u_top (
         .clk(clk),
         .button(pb[0]),
-        .rxd(1'b1),
-        .txd(uo_txd),
         .led(uo_led)
     );
     assign led[0] = uo_led[0];
