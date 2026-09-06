@@ -11,7 +11,7 @@ Vjade_hw_top__Syms::Vjade_hw_top__Syms(VerilatedContext* contextp, const char* n
     , TOP{this, namep}
 {
     // Check resources
-    Verilated::stackCheck(188);
+    Verilated::stackCheck(0);
     // Setup sub module instances
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-12);

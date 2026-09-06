@@ -1,0 +1,56 @@
+module shftreg (
+	input clk
+	input in,
+	output[7:0] q
+);
+	always @(posedge clk) begin
+		q <= {q[6:0], in};
+	end
+endmodule	
+
+module fp16mtplr (
+	input[15:0] a,
+	input[15:0] b,
+	output reg overflow,
+	output reg [15:0] out
+);
+	reg a_sign = a[15];
+	reg b_sign = b[15];
+	
+	reg[4:0] a_exp = a[14:10];
+	reg[4:0] b_exp = b[14:10];
+	
+	reg[10:0] a_sig = {1'b1, a[9:0]}; //append implicit 1
+	reg[10:0] b_sig = {1'b1, b[9:0]};
+		
+	reg[21:0] prod; //now it's 22 bits
+	reg[5:0] temp_exp;
+	
+	always @(*) begin
+		if (!a_exp || !b_exp) begin //check if either is 0, if so, output is 0.
+			out = 16'b0;
+		end else begin
+			prod = a_sig * b_sig;
+			temp_exp = a_exp + b_exp - 6'd15; //offset of 15
+			if (prod[21]) begin //if product overflows (>=2) 
+				temp_exp += 6'd1;
+				out = {a_sign ^ b_sign, temp_exp[4:0], prod[20:11]};
+			end else begin 
+				out = {a_sign ^ b_sign, temp_exp[4:0], prod[19:10]};
+			end
+			overflow = temp_exp[5];
+		end
+	end 
+endmodule 
+
+module faddr (
+	input a,
+	input b,
+	input cin,
+	output cout,
+	output sum
+);
+	assign cout = (a & b) | (b & cin) | (a & cin);
+	assign sum = a ^ b ^ cin;
+endmodule
+

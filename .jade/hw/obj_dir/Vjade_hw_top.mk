@@ -37,7 +37,7 @@ VM_PREFIX = Vjade_hw_top
 VM_MODPREFIX = Vjade_hw_top
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
-  -O2 -DJADE_HW_USER_TOP=blink \
+  -O2 -DJADE_HW_USER_TOP=processing_unit \
 
 # User LDLIBS (from -LDFLAGS on Verilator command line)
 VM_USER_LDLIBS = \

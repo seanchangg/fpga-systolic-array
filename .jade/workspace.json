@@ -2,7 +2,23 @@
   "ui": {
     "openTabs": [
       {
-        "path": "/Users/seanchang/projects/fpga/uart.v",
+        "path": "/Users/seanchang/projects/fpga/fpga.qsf",
+        "isDirty": false
+      },
+      {
+        "path": "/Users/seanchang/projects/fpga/sys_array/systolic.qsf",
+        "isDirty": false
+      },
+      {
+        "path": "/Users/seanchang/projects/fpga/sys_array/systolic.v",
+        "isDirty": true
+      },
+      {
+        "path": "/Users/seanchang/projects/fpga/sys_array/tb_systolic.v",
+        "isDirty": false
+      },
+      {
+        "path": "/Users/seanchang/projects/fpga/sys_array/sim/tb_systolic.fst",
         "isDirty": false
       }
     ],
@@ -21,7 +37,9 @@
       false,
       true
     ],
-    "boardWidth": 440.0,
-    "activeTabIndex": 0
+    "boardWidth": 395.140625,
+    "activeTabIndex": 2,
+    "markdownVisible": true,
+    "markdownWidth": 420.0
   }
 }

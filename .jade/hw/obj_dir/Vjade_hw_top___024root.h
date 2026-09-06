@@ -18,16 +18,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vjade_hw_top___024root final {
     VL_IN8(pb,3,0);
     VL_IN8(dipsw,4,0);
     VL_OUT8(led,4,0);
-    CData/*0:0*/ __VstlFirstIteration;
-    CData/*0:0*/ __VstlPhaseResult;
-    CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
-    CData/*0:0*/ __VactPhaseResult;
-    CData/*0:0*/ __VnbaPhaseResult;
-    IData/*25:0*/ jade_hw_top__DOT__u_top__DOT__count;
-    IData/*31:0*/ __VactIterCount;
-    VlUnpacked<QData/*63:0*/, 1> __VstlTriggered;
-    VlUnpacked<QData/*63:0*/, 1> __VactTriggered;
-    VlUnpacked<QData/*63:0*/, 1> __VnbaTriggered;
 
     // INTERNAL VARIABLES
     Vjade_hw_top__Syms* vlSymsp;

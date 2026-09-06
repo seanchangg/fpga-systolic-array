@@ -7,15 +7,17 @@ module jade_hw_top (
     input  wire [4:0] dipsw,
     output wire [4:0] led
 );
-    wire [4:0] uo_led;
-    blink u_top (
+    wire [15:0] uo_out;
+    processing_unit u_top (
         .clk(clk),
-        .button(pb[0]),
-        .led(uo_led)
+        .a({1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1}),
+        .b({1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1}),
+        .c({1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1}),
+        .out(uo_out)
     );
-    assign led[0] = uo_led[0];
-    assign led[1] = uo_led[1];
-    assign led[2] = uo_led[2];
-    assign led[3] = uo_led[3];
-    assign led[4] = uo_led[4];
+    assign led[0] = 1'b1;
+    assign led[1] = 1'b1;
+    assign led[2] = 1'b1;
+    assign led[3] = 1'b1;
+    assign led[4] = 1'b1;
 endmodule
