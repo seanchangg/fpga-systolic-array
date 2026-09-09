@@ -3,16 +3,18 @@
 //
 // Drives one 2x2 problem, then follows the 10-tick schedule that `count`
 // runs, and prints every PE output and every `out` word per tick, decoded
-// from fp16 to a real. The expected A*B + C is printed first, so a bad tick
+// from fp16 to a real. The expected result is printed first, so a bad tick
 // stands out in the log.
 //
-// Element order is row-major, the same as the design: index = row*2 + col.
+// Indices are [row][col]. The bias `c` is a full 2x2 matrix. The design
+// loads c[r][k] into c_in[k] on the tick that row r enters column k, so
+// the reference is out[r][k] = c[r][k] + a[r][0]*b[0][k] + a[r][1]*b[1][k].
 module tb_array;
     logic clk = 0;
-    logic [15:0] a[3:0];
-    logic [15:0] b[3:0];
-    logic [15:0] c[3:0];
-    logic [15:0] out[3:0];
+    logic [15:0] a[2][2];
+    logic [15:0] b[2][2];
+    logic [15:0] c[2][2];
+    logic [15:0] out[2][2];
 
     array dut (.clk(clk), .a(a), .b(b), .c(c), .out(out));
     always #10 clk = ~clk;   // 50 MHz
@@ -38,49 +40,57 @@ module tb_array;
         end
     endfunction
 
-    // The reference: C = A*B + Cin, in reals.
-    real expect_out[3:0];
+    // The reference: out = A*B + C, element for element.
+    real expect_out[2][2];
     task compute_expected;
         integer r, k, i;
         begin
             for (r = 0; r < 2; r = r + 1)
                 for (k = 0; k < 2; k = k + 1) begin
-                    expect_out[r*2+k] = h2r(c[r*2+k]);
+                    expect_out[r][k] = h2r(c[r][k]);
                     for (i = 0; i < 2; i = i + 1)
-                        expect_out[r*2+k] = expect_out[r*2+k]
-                            + h2r(a[r*2+i]) * h2r(b[i*2+k]);
+                        expect_out[r][k] = expect_out[r][k]
+                            + h2r(a[r][i]) * h2r(b[i][k]);
                 end
             $display("expected: [%0.3f %0.3f ; %0.3f %0.3f]",
-                expect_out[0], expect_out[1], expect_out[2], expect_out[3]);
+                expect_out[0][0], expect_out[0][1],
+                expect_out[1][0], expect_out[1][1]);
         end
     endtask
 
     // One line per tick: the counter, the four PE outputs, the four outs.
     task show_tick;
-        $display("count=%0d  pe=[%0.3f %0.3f %0.3f %0.3f]  out=[%0.3f %0.3f %0.3f %0.3f]",
+        $display("count=%0d  pe=[%0.3f %0.3f ; %0.3f %0.3f]  out=[%0.3f %0.3f ; %0.3f %0.3f]",
             dut.count,
-            h2r(dut.out_next[0]), h2r(dut.out_next[1]),
-            h2r(dut.out_next[2]), h2r(dut.out_next[3]),
-            h2r(out[0]), h2r(out[1]), h2r(out[2]), h2r(out[3]));
+            h2r(dut.out_next[0][0]), h2r(dut.out_next[0][1]),
+            h2r(dut.out_next[1][0]), h2r(dut.out_next[1][1]),
+            h2r(out[0][0]), h2r(out[0][1]),
+            h2r(out[1][0]), h2r(out[1][1]));
     endtask
 
     integer t;
     initial begin
         $dumpfile("tb_array.fst");
         $dumpvars(0, tb_array);
-        // Icarus does not dump array words unless they are named.
-        for (t = 0; t < 4; t = t + 1) begin
-            $dumpvars(0, a[t], b[t], c[t], out[t]);
-            $dumpvars(0, dut.a_next[t], dut.out_next[t]);
-        end
-        for (t = 0; t< 2; t = t+1) begin
-            $dumpvars(0, dut.c_in[t]);
-        end
+        // Icarus does not dump array words unless each one is named with
+        // a constant index. A loop index or a whole array is rejected.
+        $dumpvars(0, a[0][0], a[0][1], a[1][0], a[1][1]);
+        $dumpvars(0, b[0][0], b[0][1], b[1][0], b[1][1]);
+        $dumpvars(0, c[0][0], c[0][1], c[1][0], c[1][1]);
+        $dumpvars(0, out[0][0], out[0][1], out[1][0], out[1][1]);
+        $dumpvars(0, dut.c_in[0], dut.c_in[1]);
+        $dumpvars(0, dut.a_next[0][0], dut.a_next[0][1],
+                     dut.a_next[1][0], dut.a_next[1][1]);
+        $dumpvars(0, dut.out_next[0][0], dut.out_next[0][1],
+                     dut.out_next[1][0], dut.out_next[1][1]);
 
         // A = [1 2 ; 3 4], B = I, C = 0  ->  A*B + C = A
-        a[0] = F1; a[1] = F2; a[2] = F3; a[3] = F4;
-        b[0] = F1; b[1] = F0; b[2] = F0; b[3] = F1;
-        c[0] = F0; c[1] = F0; c[2] = F0; c[3] = F0;
+        a[0][0] = F1; a[0][1] = F2;
+        a[1][0] = F3; a[1][1] = F4;
+        b[0][0] = F1; b[0][1] = F0;
+        b[1][0] = F0; b[1][1] = F1;
+        c[0][0] = F0; c[0][1] = F0;
+        c[1][0] = F0; c[1][1] = F0;
         compute_expected();
 
         // Line up with the start of a schedule, then watch two full passes.
@@ -92,7 +102,8 @@ module tb_array;
         end
 
         $display("final out: [%0.3f %0.3f ; %0.3f %0.3f]",
-            h2r(out[0]), h2r(out[1]), h2r(out[2]), h2r(out[3]));
+            h2r(out[0][0]), h2r(out[0][1]),
+            h2r(out[1][0]), h2r(out[1][1]));
         $finish;
     end
 endmodule

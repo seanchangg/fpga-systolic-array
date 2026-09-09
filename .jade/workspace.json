@@ -6,11 +6,11 @@
         "isDirty": false
       },
       {
-        "path": "/Users/seanchang/projects/fpga/sys_array/tb_array.sv",
+        "path": "/Users/seanchang/projects/fpga/sys_array/systolic.sv",
         "isDirty": false
       },
       {
-        "path": "/Users/seanchang/projects/fpga/sys_array/systolic.sv",
+        "path": "/Users/seanchang/projects/fpga/sys_array/tb_array_hard.sv",
         "isDirty": false
       }
     ],
@@ -30,7 +30,7 @@
       true
     ],
     "boardWidth": 395.140625,
-    "activeTabIndex": 2,
+    "activeTabIndex": 1,
     "markdownVisible": true,
     "markdownWidth": 420.0
   }

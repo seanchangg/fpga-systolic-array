@@ -2,20 +2,22 @@
 // Self-checking testbench for `array` in systolic.sv.
 //
 // Each case holds A, B, C for one full 10-tick schedule of `count`, then
-// compares every out word with A*B + C computed in reals. Element order is
-// row-major, the same as the design: index = row*2 + col.
+// compares every out word with A*B + C computed in reals.
+//
+// The ports are 2-D, indexed [row][col]. The real-valued copies in this
+// file stay flat, index = row*2 + col, so each case reads as one line.
 //
 // The inputs change at the negative edge when count == 0, so the sample
-// points at count 0, 3 and 6 all see the same problem. The four outputs
+// points at count 0, 2 and 4 all see the same problem. The four outputs
 // are all valid when count returns to 0.
 module tb_array_hard;
     import fp16_tb_pkg::*;
 
     logic clk = 0;
-    logic [15:0] a[3:0];
-    logic [15:0] b[3:0];
-    logic [15:0] c[3:0];
-    logic [15:0] out[3:0];
+    logic [15:0] a[2][2];
+    logic [15:0] b[2][2];
+    logic [15:0] c[2][2];
+    logic [15:0] out[2][2];
     array dut (.clk(clk), .a(a), .b(b), .c(c), .out(out));
     always #10 clk = ~clk;
 
@@ -34,15 +36,19 @@ module tb_array_hard;
 
     task automatic run_case(input string name);
         real want[3:0], got[3:0];
+        logic [15:0] raw[3:0];
         bit ok, all_ok;
         integer r, k, i;
 
         // Line up with the start of a schedule, then apply the problem.
         @(negedge clk);
         while (dut.count != 0) @(negedge clk);
-        for (i = 0; i < 4; i = i + 1) begin
-            a[i] = r2h(ra[i]); b[i] = r2h(rb[i]); c[i] = r2h(rc[i]);
-        end
+        for (r = 0; r < 2; r = r + 1)
+            for (k = 0; k < 2; k = k + 1) begin
+                a[r][k] = r2h(ra[r*2+k]);
+                b[r][k] = r2h(rb[r*2+k]);
+                c[r][k] = r2h(rc[r*2+k]);
+            end
 
         // One full pass: count 0 .. 9, then back to 0.
         repeat (10) @(negedge clk);
@@ -52,12 +58,13 @@ module tb_array_hard;
                 want[r*2+k] = rc[r*2+k];
                 for (i = 0; i < 2; i = i + 1)
                     want[r*2+k] = want[r*2+k] + ra[r*2+i] * rb[i*2+k];
+                raw[r*2+k] = out[r][k];
             end
 
         all_ok = 1;
         for (i = 0; i < 4; i = i + 1) begin
-            got[i] = h2r(out[i]);
-            ok = (^out[i] !== 1'bx) && fp_close(got[i], want[i]);
+            got[i] = h2r(raw[i]);
+            ok = (^raw[i] !== 1'bx) && fp_close(got[i], want[i]);
             if (!ok) all_ok = 0;
         end
         if (all_ok) n_pass = n_pass + 1; else n_fail = n_fail + 1;
@@ -67,11 +74,12 @@ module tb_array_hard;
                  ra[0], ra[1], ra[2], ra[3], rb[0], rb[1], rb[2], rb[3], rc[0], rc[1], rc[2], rc[3]);
         $display("      want=[%0.4f %0.4f; %0.4f %0.4f]", want[0], want[1], want[2], want[3]);
         $display("      got=[%0.4f %0.4f; %0.4f %0.4f]  raw=[%h %h %h %h]",
-                 got[0], got[1], got[2], got[3], out[0], out[1], out[2], out[3]);
+                 got[0], got[1], got[2], got[3], raw[0], raw[1], raw[2], raw[3]);
         if (!all_ok)
             for (i = 0; i < 4; i = i + 1)
-                if (!((^out[i] !== 1'bx) && fp_close(got[i], want[i])))
-                    $display("      out[%0d] wrong: got %0.4f, want %0.4f", i, got[i], want[i]);
+                if (!((^raw[i] !== 1'bx) && fp_close(got[i], want[i])))
+                    $display("      out[%0d][%0d] wrong: got %0.4f, want %0.4f",
+                             i / 2, i % 2, got[i], want[i]);
     endtask
 
     function automatic real rand_val(input integer lo, input integer hi);
@@ -86,10 +94,17 @@ module tb_array_hard;
     initial begin
         $dumpfile("tb_array_hard.fst");
         $dumpvars(0, tb_array_hard);
-        for (i = 0; i < 4; i = i + 1) begin
-            $dumpvars(0, a[i], b[i], c[i], out[i]);
-            $dumpvars(0, dut.a_next[i], dut.c_next[i], dut.out_next[i]);
-        end
+        // Icarus does not dump array words unless each one is named with
+        // a constant index. A loop index or a whole array is rejected.
+        $dumpvars(0, a[0][0], a[0][1], a[1][0], a[1][1]);
+        $dumpvars(0, b[0][0], b[0][1], b[1][0], b[1][1]);
+        $dumpvars(0, c[0][0], c[0][1], c[1][0], c[1][1]);
+        $dumpvars(0, out[0][0], out[0][1], out[1][0], out[1][1]);
+        $dumpvars(0, dut.c_in[0], dut.c_in[1]);
+        $dumpvars(0, dut.a_next[0][0], dut.a_next[0][1],
+                     dut.a_next[1][0], dut.a_next[1][1]);
+        $dumpvars(0, dut.out_next[0][0], dut.out_next[0][1],
+                     dut.out_next[1][0], dut.out_next[1][1]);
 
         // 1. The original sanity case: A*I + 0 = A.
         set_a(1, 2, 3, 4);  set_b(1, 0, 0, 1);  set_c(0, 0, 0, 0);
