@@ -31,7 +31,7 @@ module processing_unit (
 		if (!a_exp || !b_exp) begin //check if either is 0, if so, output is 0.
 			mult_next = 16'b0;
 		end else if(prod[21]) begin
-			mult_next = {a_sign ^ b_sign, prod_exp[4:0]+6'd1, prod[20:11]};
+			mult_next = {a_sign ^ b_sign, prod_exp[4:0]+5'd1, prod[20:11]};
 		end else begin
 			mult_next = {a_sign ^ b_sign, prod_exp[4:0], prod[19:10]};
 		end
@@ -112,13 +112,67 @@ module processing_unit (
 			    else                    shift_amount = 4'd0; 
 				temp_sum = temp_sum << shift_amount;
 				sum_exp = sum_exp - shift_amount;		
+				sum_next = temp_sum ? {sum_sign, sum_exp, temp_sum[9:0]} : 16'b0;		
 			end
-			sum_next = temp_sum ? {sum_sign, sum_exp, temp_sum[9:0]} : 16'b0;		
 		end
 	end 
 	
 	always @(posedge clk) begin
 		out <= sum_next;
+	end
+endmodule
+
+module array (
+	input clk,
+	input[15:0] a[3:0],
+	input[15:0] b[3:0],
+	input[15:0] c[3:0],
+	output reg[15:0] out[3:0]
+); 
+	logic[15:0] a_next[3:0];
+	logic[15:0] c_in[1:0];
+	logic[15:0] out_next[3:0];
+	genvar i,j;
+	generate
+		for (i =0;i<2; ++i) begin : row_gen
+			for (j =0; j<2; ++j) begin : col_gen
+				if (i == 0) processing_unit pe (.clk(clk), .a(a_next[i*2+j]), .b(b[i*2+j]), .c(c_in[j]), .out(out_next[j]));
+				else processing_unit pe (.clk(clk), .a(a_next[i*2+j]), .b(b[i*2+j]), .c(out_next[(i-1)*2+j]), .out(out_next[i*2+j]));
+			end
+		end
+	endgenerate 
+	//count up to indicate when data gets loaded. 
+	//2 ticks for loading B, 6 ticks for passing A through (2 ticks per multiply-add)
+	logic[3:0] count = 4'b0; 
+	always @(posedge clk) begin
+		count <= (count + 1) % 10;
+		if (count == 0) begin //initial load. First processing unit starts at cycle 1.
+			a_next[0] <= a[0];
+			c_in[0] <= c[0];			
+		end else if (count == 2) begin //1st ripple 0
+			a_next[0] <= a[2];
+			c_in[0] <= c[2];
+
+			//ripple
+			a_next[1] <= a_next[0];
+			a_next[2] <= a[1];
+			c_in[1] <= c[1];
+			//
+		end else if (count == 4) begin //2nd ripple, 1st ripple done
+			a_next[1] <= a_next[0];
+			a_next[2] <= a[3];
+			a_next[3] <= a_next[2];
+			c_in[1] <= c[3];
+		end else if (count == 5) begin
+			out[0] <= out_next[2]; //capture output of r1c1
+		end else if (count == 6) begin
+			a_next[3] <= a_next[2];
+		end else if (count == 7) begin
+			out[2] <= out_next[2];
+			out[1] <= out_next[3];			
+		end else if (count == 9) begin
+			out[3] <= out_next[3];
+		end 
 	end
 endmodule
 

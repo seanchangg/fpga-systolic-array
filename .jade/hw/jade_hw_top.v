@@ -7,17 +7,18 @@ module jade_hw_top (
     input  wire [4:0] dipsw,
     output wire [4:0] led
 );
-    wire [15:0] uo_out;
-    processing_unit u_top (
+    wire uo_txd;
+    wire [4:0] uo_led;
+    uart u_top (
         .clk(clk),
-        .a({1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1}),
-        .b({1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1}),
-        .c({1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1}),
-        .out(uo_out)
+        .button(pb[0]),
+        .rxd(1'b1),
+        .txd(uo_txd),
+        .led(uo_led)
     );
-    assign led[0] = 1'b1;
-    assign led[1] = 1'b1;
-    assign led[2] = 1'b1;
-    assign led[3] = 1'b1;
-    assign led[4] = 1'b1;
+    assign led[0] = uo_led[0];
+    assign led[1] = uo_led[1];
+    assign led[2] = uo_led[2];
+    assign led[3] = uo_led[3];
+    assign led[4] = uo_led[4];
 endmodule
