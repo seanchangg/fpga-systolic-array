@@ -145,6 +145,8 @@ module array (
 	//2 ticks for loading B, 6 ticks for passing A through (2 ticks per multiply-add)
 	logic[3:0] count = 4'b0; 
 	reg[3:0] skew = 4'b0; //which diagonal we're on 1 to 2N
+	//you
+	
 	always @(posedge clk) begin
 		count <= (count + 1) % 10;		
 		if (count == 0) begin //initial load. First processing unit starts at cycle 1.
